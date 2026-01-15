@@ -1,0 +1,213 @@
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Hello! I'm Campus Helper, your guide to ASH.");
+        System.out.println("Ask me about teachers, classes, clubs, lunch, or tell me what you like.");
+        System.out.println("Type 'bye' when you're done.\n");
+
+        String response = "";
+        String lastTopic = "";
+
+        while (!response.equals("bye")) {
+            System.out.print("> ");
+            response = scanner.nextLine();
+            // trim blank spaces
+            if (response.trim().length() == 0) {
+                System.out.println("Please say something i'm here to help.");
+            }
+            else if (response.equals("bye")) {
+                System.out.println("See you around campus! Have a great day.");
+            }
+            else {
+                String reply = Response(response, lastTopic);
+                System.out.println(reply);
+
+                response = response.toLowerCase();
+                if (response.indexOf("teacher") >= 0 || response.indexOf("teaches") >= 0) {
+                    lastTopic = "teachers";
+                }
+                else if (response.indexOf("club") >= 0) {
+                    lastTopic = "clubs";
+                }
+                else if (response.indexOf("lunch") >= 0 || response.indexOf("food") >= 0) {
+                    lastTopic = "lunch";
+                }
+                else if (response.indexOf("class") >= 0) {
+                    lastTopic = "classes";
+                }
+            }
+        }
+
+        scanner.close();
+    }
+
+    public static String Response(String statement, String lastTopic) {
+        String response = "";
+        String lower = statement.toLowerCase();
+
+        // transformations first so they dont  blocked
+        if (lower.indexOf("i want to join") >= 0) {
+            response = transformIWantToJoin(statement);
+        }
+        else if (lower.indexOf("i like") >= 0) {
+            response = transformILike(statement);
+        }
+        else if (lower.indexOf("i need help") >= 0) {
+            response = transformINeedHelp(statement);
+        }
+
+        // teachers
+        else if (lower.indexOf("physics") >= 0 && lower.indexOf("who") >= 0) {
+            response = "Mr. S teaches physics.";
+        }
+        else if (lower.indexOf("english") >= 0 && lower.indexOf("who") >= 0) {
+            response = "Mrs. Dunning teaches English.";
+        }
+        else if (lower.indexOf("math") >= 0 && lower.indexOf("who") >= 0) {
+            response = "Mr. Hamilton teaches most of the math classes.";
+        }
+        else if (lower.indexOf("history") >= 0 && lower.indexOf("who") >= 0) {
+            response = "Ms. Walker teaches history.";
+        }
+
+        // clubs
+        else if (lower.indexOf("robotics") >= 0 || lower.indexOf("robot") >= 0) {
+            response = "The robotics club meets every Tuesday after school in the stem lounge.";
+        }
+        else if (lower.indexOf("drama") >= 0 || lower.indexOf("theater") >= 0) {
+            response = "Drama club is doing the Spitfire Grill this winter. Auditions were in February!";
+        }
+        else if (lower.indexOf("debate") >= 0) {
+            response = "Speech & Debate meets Thursday, they are going to Rome.";
+        }
+        else if (lower.indexOf("coding") >= 0 || lower.indexOf("computer") >= 0) {
+            response = "Coding club meets every wednesday.";
+        }
+
+        // lunch
+        else if (lower.indexOf("lunch") >= 0 && lower.indexOf("when") >= 0) {
+            response = "Lunch is from 12:05 to 12:45. Make sure you're not late!";
+        }
+        else if (lower.indexOf("lunch") >= 0 && lower.indexOf("what") >= 0) {
+            response = "Today's lunch is either pizza or a chicken sandwich, though they are like 6 euros.";
+        }
+        else if (lower.indexOf("food") >= 0 || lower.indexOf("cafeteria") >= 0) {
+            response = "The cafeteria has a main lunch, snacks, and other foods.";
+        }
+
+        // classes
+        else if (lower.indexOf("schedule") >= 0) {
+            response = "We have 8 periods. School starts at 8:30 AM and ends at 3:30 PM.";
+        }
+        else if (lower.indexOf("ap") >= 0 && lower.indexOf("what") >= 0) {
+            response = "We offer AP Calculus, AP Physics, AP English, AP CSA, AP History, AP Econ, AP Chem, and AP Bio..";
+        }
+
+        // extension part
+        else if (lastTopic.length() > 0 && lower.indexOf("more") >= 0) {
+            response = MoreInfo(lastTopic);
+        }
+        else if (lastTopic.length() > 0 && lower.indexOf("anything else") >= 0) {
+            response = MoreInfo(lastTopic);
+        }
+
+        // general keywords
+        else if (lower.indexOf("teacher") >= 0) {
+            response = "Which subject are you asking about? We have physics, english, math, and history.";
+        }
+        else if (lower.indexOf("club") >= 0) {
+            response = "We have robotics, drama, debate, and coding clubs! Which one interests you?";
+        }
+
+        // default
+        else {
+            response = RandomResponse();
+        }
+
+        return response;
+    }
+
+    public static String transformIWantToJoin(String statement) {
+        statement = statement.trim();
+
+        String lastChar = statement.substring(statement.length() - 1);
+        if (lastChar.equals(".") || lastChar.equals("!")) {
+            statement = statement.substring(0, statement.length() - 1);
+        }
+
+        int pos = statement.toLowerCase().indexOf("i want to join");
+        String restOfStatement = statement.substring(pos + 14).trim();
+
+        return "What makes you interested in " + restOfStatement + "?";
+    }
+
+    public static String transformILike(String statement) {
+        statement = statement.trim();
+        // removes last character if its punctuation
+        String lastChar = statement.substring(statement.length() - 1);
+        if (lastChar.equals(".") || lastChar.equals("!")) {
+            statement = statement.substring(0, statement.length() - 1);
+        }
+        // removes i like statement
+        int pos = statement.toLowerCase().indexOf("i like");
+        String restOfStatement = statement.substring(pos + 6).trim();
+
+        return "Cool! Why do you like " + restOfStatement + "?";
+    }
+
+    public static String transformINeedHelp(String statement) {
+        statement = statement.trim();
+        // punctuation removal
+        String lastChar = statement.substring(statement.length() - 1);
+        if (lastChar.equals(".") || lastChar.equals("!")) {
+            statement = statement.substring(0, statement.length() - 1);
+        }
+        // removes i need help part
+        int pos = statement.toLowerCase().indexOf("i need help");
+        String restOfStatement = statement.substring(pos + 11).trim();
+
+        return "Have you tried asking a teacher about " + restOfStatement + "? They have office hours!";
+    }
+
+    public static String MoreInfo(String topic) {
+        if (topic.equals("teachers")) {
+            return "Most teachers have office hours after school until 4, check their rooms or the mezzanine.";
+        }
+        else if (topic.equals("clubs")) {
+            return "All club meetings are posted on the bulletin.";
+        }
+        else if (topic.equals("lunch")) {
+            return "You can also bring lunch from home. There are microwaves in the cafeteria!";
+        }
+        else if (topic.equals("classes")) {
+            return "If you need to change your schedule, talk to your counselor (it might be a bit late).";
+        }
+        else {
+            return RandomResponse();
+        }
+    }
+
+    public static String RandomResponse() {
+        double r = Math.random();
+        int whichResponse = (int) (r * 6);
+        String response = "";
+
+        String[] responses = {
+                "Interesting. Tell me more!",
+                "I'm not sure about that. Try asking about teachers, clubs, lunch, or classes!",
+                "Hmm, I don't know that one. What else can I help you with?",
+                "That's cool! Anything else you want to know about school?",
+                "You can ask me about teachers, clubs, lunch times, or class schedules!",
+                "I'm here to help with school info. What do you want to know?"
+        };
+
+        whichResponse = (int)(Math.random() * responses.length);
+        return responses[whichResponse];
+
+
+    }
+}
